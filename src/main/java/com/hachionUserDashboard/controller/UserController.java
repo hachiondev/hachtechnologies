@@ -3,13 +3,18 @@ package com.hachionUserDashboard.controller;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,18 +23,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.hachionUserDashboard.dto.ChangePasswordRequest;
 import com.hachionUserDashboard.dto.LoginRequest;
 import com.hachionUserDashboard.dto.OtpRequest;
+import com.hachionUserDashboard.dto.PartialUpdateUserDto;
 
 import com.hachionUserDashboard.dto.UserRegistrationRequest;
 import com.hachionUserDashboard.entity.User;
+import com.hachionUserDashboard.repository.UserRepository;
 import com.hachionUserDashboard.util.EmailUtil;
 
 import Response.LoginResponse;
 import Service.UserService;
 
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
@@ -39,6 +46,8 @@ public class UserController {
 
 	@Autowired
 	private EmailUtil emailUtil;
+	@Autowired
+	private UserRepository userRepository;
 
 
 	@PostMapping("/send-otp")
@@ -101,23 +110,31 @@ public class UserController {
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<?> getUserProfile(Authentication authentication) {
-		System.out.println("Authentication: " + authentication);
+    public ResponseEntity<?> getUserProfile(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
 
-		if (authentication == null || !(authentication.getPrincipal() instanceof OAuth2User)) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated"));
-		}
+        Object principal = authentication.getPrincipal();
+        String email = null;
 
-		OAuth2User user = (OAuth2User) authentication.getPrincipal();
-		System.out.println("OAuth2User: " + user);
+        if (principal instanceof OAuth2User oauthUser) {
+            email = oauthUser.getAttribute("email");
+        } else if (principal instanceof UserDetails userDetails) {
+            email = userDetails.getUsername();
+        }
 
-		String email = user.getAttribute("email");
-		String username = user.getAttribute("name");
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email not found");
+        }
 
-		User savedUser = userService.saveUser(username, email);
+        Optional<User> userOptional = userRepository.findByEmailForProfile(email);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
 
-		return ResponseEntity.ok(Map.of("email", savedUser.getEmail(), "name", savedUser.getUserName()));
-	}
+        return ResponseEntity.ok(userOptional.get());
+    }
 
 
 	@GetMapping("/login2")
@@ -140,4 +157,44 @@ public class UserController {
 	        userService.resetPassword(request);
 	        return ResponseEntity.ok("Password updated successfully");
 	    }
+	  @PatchMapping("/partial-update")
+	  public ResponseEntity<String> partiallyUpdateUser(
+	          @RequestParam String email, // This identifies the user to update
+	          @RequestBody PartialUpdateUserDto updateDto) {
+
+	      Optional<User> userOptional = Optional.of(userRepository.findByEmail(email));
+	      if (userOptional.isEmpty()) {
+	          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+	      }
+
+	      User user = userOptional.get();
+
+	      if (updateDto.getUserName() != null) {
+	          user.setUserName(updateDto.getUserName());
+	      }
+	      if (updateDto.getEmail() != null) {
+	          user.setEmail(updateDto.getEmail());
+	      }
+	      if (updateDto.getMobile() != null) {
+	          user.setMobile(updateDto.getMobile());
+	      }
+
+	      userRepository.save(user);
+	      return ResponseEntity.ok("User details updated successfully");
+	  }
+
+
+
+	    @PutMapping("/change-password")
+	    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+	        String result = userService.changePassword(request.getEmail(), request.getOldPassword(), request.getNewPassword());
+
+	        if ("Password updated successfully".equals(result)) {
+	            return ResponseEntity.ok(result);
+	        } else {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+	        }
+	    }
+
+
 }

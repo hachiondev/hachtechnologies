@@ -19,7 +19,7 @@ import com.hachionUserDashboard.util.EmailUtil;
 import com.hachionUserDashboard.util.OtpUtil;
 
 import Response.LoginResponse;
-
+import Service.UpdateUserProfileDto;
 import Service.UserService;
 
 @Service
@@ -311,5 +311,44 @@ public class Userimpl implements UserService {
 		        System.out.println("User not found with email: " + request.getEmail());
 		    }
 		}
+
+	 public String changePassword(String email, String oldPassword, String newPassword) {
+//		    User userOptional = userRepository.findByEmail(email); // Corrected variable name
+//		    if (userOptional.isPresent()) {
+//		        User user = userOptional.get();
+		        Optional<User> userOptional = Optional.of(userRepository.findByEmail(email));
+		        if (userOptional.isPresent()) {
+		            User user = userOptional.get();
+		        // Compare old password using encoded form
+		        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+		            // Encode the new password
+		            String encodedNewPassword = passwordEncoder.encode(newPassword);
+		            user.setPassword(encodedNewPassword);
+		            userRepository.save(user);
+		            return "Password updated successfully";
+		        } else {
+		            return "Old password is incorrect";
+		        }
+		    } else {
+		        return "User not found";
+		    }
+		}
+
+	@Override
+	public String updateUserProfile(User updatedUser) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String updateUserProfile(UpdateUserProfileDto updatedUser) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+
+
 
 }

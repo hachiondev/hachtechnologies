@@ -292,4 +292,9 @@ public class User {
 		this.mobile = mobile;
 	}
 
+	public boolean isPresent() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -1,7 +1,10 @@
 package Service;
 
 import java.util.List;
+import java.util.Optional;
+
 import com.hachionUserDashboard.dto.LoginRequest;
+
 import com.hachionUserDashboard.dto.UserRegistrationRequest;
 import com.hachionUserDashboard.entity.User;
 
@@ -46,4 +49,16 @@ public interface UserService {
 
 	
 	public void resetPassword(UserRegistrationRequest request);
+
+	String updateUserProfile(User updatedUser);
+
+	String changePassword(String email, String oldPassword, String newPassword);
+
+	String updateUserProfile(UpdateUserProfileDto updatedUser);
+
+
+	
+
+	
+
 }
