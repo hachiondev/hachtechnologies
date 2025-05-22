@@ -35,7 +35,6 @@ import com.hachionUserDashboard.repository.BlogsRepository;
 
 @RequestMapping()
 @CrossOrigin
-//@CrossOrigin(origins ="http://localhost:3000")
 @RestController
 public class BlogsController {
 
