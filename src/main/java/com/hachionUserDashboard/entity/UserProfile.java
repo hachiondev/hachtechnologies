@@ -36,6 +36,8 @@ public class UserProfile {
     private String skills;
     private String additionalInfo;
    private String date;
+	private String profileImagePath;
+    private String resumePath;
     public String getDate() {
 	return date;
 }
@@ -44,8 +46,7 @@ public void setDate(String date) {
 	this.date = date;
 }
 
-	private String profileImagePath;
-    private String resumePath;
+
 
     // Getters and Setters
     public UserProfile() {

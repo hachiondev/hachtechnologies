@@ -147,19 +147,19 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "user_name")
 	private String userName;
 
-	@Column(name = "email", nullable = false, unique = true)
+	@Column(name = "email", unique = true)
 	private String email;
 
 	@Column(name = "student_id")
 	private String studentId;
 
-    @Column(name = "mobile",nullable=true)
+    @Column(name = "mobile")
 	private Long mobile;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
 	private String password;
 
 	private String OTP;

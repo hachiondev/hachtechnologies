@@ -84,6 +84,8 @@ public class UserProfileController {
         service.deleteProfile(id);
         return ResponseEntity.ok("Profile deleted successfully.");
     }
+    
+    
 
     private String saveFile(MultipartFile file) throws IOException {
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
