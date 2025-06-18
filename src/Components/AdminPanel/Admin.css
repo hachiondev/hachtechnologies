@@ -1,0 +1,13 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.admin{
+    display: flex;
+    flex-direction: row;
+
+}
+.ProseMirror {
+  outline: none;
+  min-height: 150px;
+}
