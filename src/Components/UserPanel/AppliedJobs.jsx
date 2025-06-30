@@ -76,7 +76,6 @@ const handleLogin=()=>{
 
     const existingJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
     const isAlreadyApplied = existingJobs.some(j => j.job_id === job.job_id);
-
     if (isAlreadyApplied) {
       alert("You already applied for this job.");
     } else {
