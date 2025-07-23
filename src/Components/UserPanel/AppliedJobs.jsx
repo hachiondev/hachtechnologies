@@ -1,100 +1,135 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Card, Row, Col, Form, Button, Modal } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { IoLocationOutline } from "react-icons/io5";
-import { IoBriefcaseOutline } from "react-icons/io5";
-import { TiDocumentText } from "react-icons/ti";
-import { PiTimerBold } from "react-icons/pi";
+import { Card, Row, Col, Form } from "react-bootstrap";
+import './Login.css';
+import hachlogo from '../../Assets/hachlogo.png';
+import JobCard from './JobCard';
 
 const AppliedJobs = () => {
-  const [jobs, setJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);
   const [selectedDate, setSelectedDate] = useState("All");
   const [minSalary, setMinSalary] = useState(0);
-  const [workTypes, setWorkTypes] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [appliedJob, setAppliedJob] = useState(null);
-const navigate=useNavigate();
-  useEffect(() => {
-    axios.get("https://api.hachtechnologies.com/jobpost")
-      .then((res) => {
-        setJobs(res.data);
-        setFilteredJobs(res.data);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  const [showFilters, setShowFilters] = useState(false);
+  const [jobTitle, setJobTitle] = useState('');
+  const [jobType, setJobType] = useState('');
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [experiences, setExperiences] = useState([]);
+
+  const handleCheckboxChange = (value, setter) => {
+  setter(prev => prev.includes(value)
+    ? prev.filter(v => v !== value)
+    : [...prev, value]);
+};
+
+  const jobCards = [
+    {
+      id: 1,
+      jobTitle: 'SEO Executive',
+      companyName: 'Hachion',
+      image: hachlogo,
+      exp: '5+ Years',
+      location: 'India',
+      time: 'Full-Time',
+      type: 'Remote',
+      post: '2025-07-16',
+      vacancy: '2',
+      salary: '80000'
+    },
+    {
+      id: 2,
+      jobTitle: 'Beanch Sale',
+      companyName: 'Hachion',
+      image: hachlogo,
+      exp: '0-1 Years',
+      location: 'India',
+      time: 'Full-Time',
+      type: 'Hybrid',
+      post: '2025-07-14',
+      vacancy: '1',
+      salary: '60000'
+    },
+    {
+      id: 3,
+      jobTitle: 'Developer',
+      companyName: 'Hachion',
+      image: hachlogo,
+      exp: '2-4 Years',
+      location: 'India',
+      time: 'Full-Time',
+      type: 'Onsite',
+      post: '2025-07-10',
+      vacancy: '1',
+      salary: '95000'
+    },
+  ];
 
   useEffect(() => {
     filterJobs();
-  }, [selectedDate, minSalary, workTypes, jobs]);
+  }, [selectedDate, minSalary, jobTitle, jobType, locations, experiences]);
 
   const filterJobs = () => {
-    let filtered = [...jobs];
+    const now = new Date();
 
-    if (selectedDate !== "All") {
-      const now = new Date();
-      filtered = filtered.filter((job) => {
-        const jobDate = new Date(job.date);
+    const filtered = jobCards.filter((job) => {
+      const matchDate = (() => {
+        if (selectedDate === 'All') return true;
+        const jobDate = new Date(job.post);
         const timeDiff = now - jobDate;
-
-        if (selectedDate === "Last 24 hours" && timeDiff > 24 * 60 * 60 * 1000) return false;
-        if (selectedDate === "Last 3 days" && timeDiff > 3 * 24 * 60 * 60 * 1000) return false;
-        if (selectedDate === "Last 7 days" && timeDiff > 7 * 24 * 60 * 60 * 1000) return false;
+        if (selectedDate === 'Last 24 hours') return timeDiff <= 24 * 60 * 60 * 1000;
+        if (selectedDate === 'Last 3 days') return timeDiff <= 3 * 24 * 60 * 60 * 1000;
+        if (selectedDate === 'Last 7 days') return timeDiff <= 7 * 24 * 60 * 60 * 1000;
         return true;
-      });
-    }
+      })();
 
-    filtered = filtered.filter((job) => parseInt(job.salary) >= minSalary);
+      const matchSalary = parseInt(job.salary) >= minSalary;
+      const matchTitle = jobTitle ? job.jobTitle.toLowerCase().includes(jobTitle.toLowerCase()) : true;
+      const matchType = jobType ? job.type.toLowerCase() === jobType.toLowerCase() : true;
+      const matchLocation = locations.length === 0 || locations.includes(job.location);
+      const matchExperience = experiences.length === 0 || experiences.includes(job.exp);
 
-    if (workTypes.length > 0) {
-      filtered = filtered.filter((job) => workTypes.includes(job.work_type));
-    }
+      return matchDate && matchSalary && matchTitle && matchType && matchLocation && matchExperience;
+    });
 
     setFilteredJobs(filtered);
   };
 
   const handleWorkTypeChange = (type) => {
-    if (workTypes.includes(type)) {
-      setWorkTypes(workTypes.filter((t) => t !== type));
-    } else {
-      setWorkTypes([...workTypes, type]);
-    }
+    setJobType((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
   };
-const handleLogin=()=>{
-  setShowLoginModal(false)
-  navigate('/login');
-}
-  const handleApply = (job) => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
+  const handleResetFilters = () => {
+  setSelectedDate("All");
+  setMinSalary(0);
+  setJobType('');
+  setLocations([]);
+  setExperiences([]);
+  setJobTitle('');
+};
 
-    if (!isLoggedIn) {
-      setShowLoginModal(true);
-      return;
-    }
-
-    const existingJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
-    const isAlreadyApplied = existingJobs.some(j => j.job_id === job.job_id);
-    if (isAlreadyApplied) {
-      alert("You already applied for this job.");
-    } else {
-      const updatedJobs = [...existingJobs, job];
-      localStorage.setItem('appliedJobs', JSON.stringify(updatedJobs));
-      setAppliedJob(job);
-      setShowModal(true);
-    }
-  };
+const handleApplyFilters = () => {
+  filterJobs();
+  setShowFilters(false); // Close drawer on apply
+};
 
   return (
-    <div className="container-fluid mt-4">
+    <div className="container-fluid mt-4 custom-container">
+      <div className="d-md-none text-end mb-2">
+      <button className="btn btn-outline-primary" onClick={() => setShowFilters(true)}>
+        Filters
+      </button>
+    </div>
       <div className="row">
         {/* Sidebar Filters */}
-        <div className="col-md-3 mb-4">
-          <Card className="p-3 shadow-sm">
-            <h5 className="mb-3">Filters</h5>
-
-            <Form.Group className="mb-3">
+        <>
+          {/* Drawer for small screens */}
+          {showFilters && (
+          <div className="filter-drawer d-md-none">
+            <div className="drawer-overlay" onClick={() => setShowFilters(false)}></div>
+            <div className="drawer-content">
+              <button className="btn-close drawer-close-btn" onClick={() => setShowFilters(false)}></button>
+                <Card className="p-3 shadow-sm d-flex flex-column h-100">
+                  <h5 className="mb-3">Filters</h5>
+                  <Form.Group className="mb-3">
               <Form.Label>Date posted</Form.Label>
               {["All", "Last 24 hours", "Last 3 days", "Last 7 days"].map((label, index) => (
                 <Form.Check
@@ -122,70 +157,158 @@ const handleLogin=()=>{
               <div className="text-success mt-1">₹{minSalary} - 1.5 Lakhs</div>
             </Form.Group>
 
-            <Form.Group>
-              <Form.Label>Work Type</Form.Label>
-              {["Full Time", "Part Time", "Internship"].map((type, index) => (
+            <Form.Group className="mb-3">
+              <Form.Label>Job Type</Form.Label>
+              {["Remote", "Hybrid", "Onsite"].map((type, index) => (
                 <Form.Check
                   type="checkbox"
                   label={type}
                   key={index}
-                  checked={workTypes.includes(type)}
+                  checked={jobType.includes(type)}
                   onChange={() => handleWorkTypeChange(type)}
                   className="mb-1"
                 />
               ))}
             </Form.Group>
+
+            <Form.Group className="mb-3">
+            <Form.Label>Location</Form.Label>
+            {["India", "USA", "Remote"].map((loc, index) => (
+              <Form.Check
+                key={index}
+                type="checkbox"
+                label={loc}
+                checked={locations.includes(loc)}
+                onChange={() => handleCheckboxChange(loc, setLocations)}
+                className="mb-1"
+              />
+            ))}
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label>Experience</Form.Label>
+            {["0-1 Years", "2-4 Years", "5+ Years"].map((exp, index) => (
+              <Form.Check
+                key={index}
+                type="checkbox"
+                label={exp}
+                checked={experiences.includes(exp)}
+                onChange={() => handleCheckboxChange(exp, setExperiences)}
+                className="mb-1"
+              />
+            ))}
+          </Form.Group>
+          <div className="mt-auto d-flex justify-content-between gap-2 pt-3">
+          <button className="btn btn-secondary w-50" onClick={handleResetFilters}>
+            Reset
+          </button>
+          <button className="btn btn-primary w-50" onClick={handleApplyFilters}>
+            Apply Filters
+          </button>
+        </div>
           </Card>
         </div>
+            </div>
+          )}
 
-        {/* Job Cards */}
-        <div className="col-md-9">
+          {/* Static Sidebar for desktop */}
+          <Col md={3} className="d-none d-md-block mb-4">
+            <Card className="p-3 shadow-sm">
+              <h5 className="mb-3">Filters</h5>
+              <Form.Group className="mb-3">
+              <Form.Label>Date posted</Form.Label>
+              {["All", "Last 24 hours", "Last 3 days", "Last 7 days"].map((label, index) => (
+                <Form.Check
+                  type="radio"
+                  label={label}
+                  name="date"
+                  key={index}
+                  value={label}
+                  checked={selectedDate === label}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="mb-1"
+                />
+              ))}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Minimum monthly salary</Form.Label>
+              <Form.Range
+                min="0"
+                max="150000"
+                step="5000"
+                value={minSalary}
+                onChange={(e) => setMinSalary(Number(e.target.value))}
+              />
+              <div className="text-success mt-1">₹{minSalary} - 1.5 Lakhs</div>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Job Type</Form.Label>
+              {["Remote", "Hybrid", "Onsite"].map((type, index) => (
+                <Form.Check
+                  type="checkbox"
+                  label={type}
+                  key={index}
+                  checked={jobType.includes(type)}
+                  onChange={() => handleWorkTypeChange(type)}
+                  className="mb-1"
+                />
+              ))}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+            <Form.Label>Location</Form.Label>
+            {["India", "USA", "Remote"].map((loc, index) => (
+              <Form.Check
+                key={index}
+                type="checkbox"
+                label={loc}
+                checked={locations.includes(loc)}
+                onChange={() => handleCheckboxChange(loc, setLocations)}
+                className="mb-1"
+              />
+            ))}
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label>Experience</Form.Label>
+            {["0-1 Years", "2-4 Years", "5+ Years"].map((exp, index) => (
+              <Form.Check
+                key={index}
+                type="checkbox"
+                label={exp}
+                checked={experiences.includes(exp)}
+                onChange={() => handleCheckboxChange(exp, setExperiences)}
+                className="mb-1"
+              />
+            ))}
+          </Form.Group>
+          <button className="btn btn-secondary w-100" onClick={handleResetFilters}>
+            Reset
+          </button>
+            </Card>
+          </Col>
+        </>
+
+        {/* Job Cards Section */}
+        <Col md={9}>
           <Row>
             {filteredJobs.length > 0 ? (
-              filteredJobs.map((job, index) => (
-                <Col md={12} key={index} className="mb-3">
-                  <Card className="shadow-sm">
-                    <Card.Body>
-                      <Card.Title className="fw-bold text-primary">{job.job_title}</Card.Title>
-                      <Card.Subtitle className="mb-2 text-muted">{job.company}</Card.Subtitle>
-                      <div className="d-flex flex-wrap gap-2 mb-2">
-                        <div className="mb-2 me-5">
-                        <IoBriefcaseOutline /> <span>Min. {job.experience} years</span>
-                        </div>
-                        <div className="mb-2">
-                        Salary : <strong>₹ {job.salary}</strong>
-                      </div>
-                      <div className="mb-2 text-secondary">
-                        <i className="bi bi-geo-alt-fill me-5"></i>
-                       <IoLocationOutline /> {job.location || "Work from home"}
-                      </div>
-                      </div>
-                      <div className="d-flex flex-wrap gap-2 mb-2">
-                        <div className="mb-2 me-5">
-                        <PiTimerBold /> <span>{job.work_type}</span>
-                        </div>
-                        <div className="mb-2">
-                       <TiDocumentText /> Skills : <span>Good English</span>
-                      </div>
-                      </div>
-                      <div className="d-flex flex-wrap gap-2 mb-4">
-                        <div className="mb-2 me-5">
-                        Openings : <span>1</span>
-                        </div>
-                        <div className="mb-2 me-5">
-                        Posted : <span>3 Days ago</span>
-                        </div>
-                      </div>
-                      <div className="d-flex flex-wrap gap-5 mb-2">
-                      <Button variant="primary" size="sm" onClick={() => handleApply(job)}>
-                        Apply Now
-                      </Button>
-                      <Button variant="outline-primary" size="sm">
-                        Save
-                      </Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
+              filteredJobs.map((job) => (
+                 <Col key={job.id} xs={12} sm={6} md={6} className="mb-3">
+                  <JobCard
+                    job={job}
+                    jobTitle={job.jobTitle}
+                    companyName={job.companyName}
+                    image={job.image}
+                    exp={job.exp}
+                    location={job.location}
+                    time={job.time}
+                    type={job.type}
+                    post={job.post}
+                    vacancy={job.vacancy}
+                  />
                 </Col>
               ))
             ) : (
@@ -194,38 +317,8 @@ const handleLogin=()=>{
               </Col>
             )}
           </Row>
-        </div>
+        </Col>
       </div>
-
-      {/* Apply Success Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Application Successful</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          You've successfully applied for: <strong>{appliedJob?.job_title}</strong>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="success" onClick={() => setShowModal(false)}>
-            OK
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Login Prompt Modal */}
-      <Modal show={showLoginModal} onHide={() => setShowLoginModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Login Required</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Please login to apply for jobs.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleLogin}>
-            Login
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };

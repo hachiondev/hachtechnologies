@@ -31,6 +31,7 @@ import BlogSection from './Components/UserPanel/BlogSection';
 import ChangePassword from './Components/UserPanel/ChangePassword';
 import Contact from './Components/AdminPanel/Contact';
 import UserProfileSettings from './Components/UserPanel/UserProfileSetting';
+import JobDetails from './Components/UserPanel/JobDetails';
 
  
 
@@ -69,6 +70,7 @@ const AppContent = () => {
         <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/applied-jobs" element={<AppliedJobs />} />
+        <Route path="/applied-jobs/apply" element={<JobDetails />} />
         <Route path="/jobs-applied" element={<AppliedJobsList/>} />
         <Route path="/account-setting" element={<AccountSettings/>} />
         <Route path="/blogs" element={<Blogs/>} />
