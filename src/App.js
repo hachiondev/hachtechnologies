@@ -19,6 +19,7 @@ import Dashboard from './Components/AdminPanel/Dashboard';
 import AdminRegisterList from './Components/AdminPanel/AdminRegisterList';
 import PartnerList from './Components/AdminPanel/PartnerList';
 import JobApplied from './Components/AdminPanel/JobApplied';
+import AdminAppliedJobs from './Components/AdminPanel/AdminAppliedJobs';
 import OtpVerification from './Components/UserPanel/OtpVerification';
 import UserDashboard from './Components/UserPanel/UserDashboard';
 import ForgotPassword from './Components/UserPanel/ForgotPassword';
@@ -32,8 +33,6 @@ import ChangePassword from './Components/UserPanel/ChangePassword';
 import Contact from './Components/AdminPanel/Contact';
 import UserProfileSettings from './Components/UserPanel/UserProfileSetting';
 import JobDetails from './Components/UserPanel/JobDetails';
-
- 
 
 const AppContent = () => {
   const location = useLocation();
@@ -67,6 +66,7 @@ const AppContent = () => {
         <Route path="/adminregister" element={<AdminRegisterList />} />
         <Route path="/partnerlist" element={<PartnerList />} />
         <Route path="/jobs" element={<JobApplied />} />
+        <Route path="/adminappliedjobs" element={<AdminAppliedJobs />} />
         <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/applied-jobs" element={<AppliedJobs />} />

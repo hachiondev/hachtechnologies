@@ -3,7 +3,6 @@ import ApplyDetails from './ApplyDetails';
 import ApplyForm from './ApplyForm';
 import { FaArrowUp } from 'react-icons/fa';
 import jobdetails from '../../Assets/apply.png';
-import { MdKeyboardArrowRight } from "react-icons/md";
 
 const JobDetails = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -25,8 +24,8 @@ const JobDetails = () => {
 <div className="container-fluid bg-light py-3">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb bg-transparent">
-            <li className="breadcrumb-item"><a href="/">Home</a> <MdKeyboardArrowRight /></li>
-            <li className="breadcrumb-item"><a href="/applied-jobs">Jobs</a> <MdKeyboardArrowRight /></li>
+            <li className="breadcrumb-item"><a href="/">Home</a></li>
+            <li className="breadcrumb-item"><a href="/applied-jobs">Jobs</a></li>
             <li className="breadcrumb-item active" aria-current="page">Job Details</li>
           </ol>
         </nav>
