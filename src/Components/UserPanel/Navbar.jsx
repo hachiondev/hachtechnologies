@@ -220,6 +220,7 @@ const Navbar = () => {
               </li>
               <li className="nav-item" onClick={() => navigate('/products')} style={{ cursor: 'pointer' }}>Products</li>
               <li className="nav-item" onClick={() => navigate('/applied-jobs')} style={{ cursor: 'pointer' }}>Jobs</li>
+              <li className="nav-item" onClick={() => navigate('/hirefromus')} style={{ cursor: 'pointer' }}>Hire from Us</li>
               <li className="nav-item" onClick={() => navigate('/blogsection')} style={{ cursor: 'pointer' }}>Blog</li>
               <li className="nav-item" onClick={() => navigate('/registration')} style={{ cursor: 'pointer' }}>Registration</li>
             </ul>

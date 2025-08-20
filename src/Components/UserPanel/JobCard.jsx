@@ -11,7 +11,7 @@ const JobCard = ({ jobTitle, companyName, image, exp, location, time, type, post
  const navigate = useNavigate();
   const handleClick = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  navigate('/applied-jobs/apply');
+  navigate('/applied-jobs/apply/:jobTitle');
 };
 
   return (

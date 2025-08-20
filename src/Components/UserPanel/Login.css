@@ -261,6 +261,21 @@ input[type="password"] {
   z-index: 1;
 }
 
+.table-responsive-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: thin; 
+}
+
+.table-responsive-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(100%);

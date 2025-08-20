@@ -24,6 +24,7 @@ const AdminAppliedJobs = () => {
               <th>Company Name</th>
               <th>Job Title</th>
               <th>Resume</th>
+              <th>Date</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -53,6 +54,7 @@ const AdminAppliedJobs = () => {
                     'N/A'
                   )}
                 </td>
+                <td>{job.date}</td>
                 <td>
                   <button className="btn btn-danger btn-sm">
                     Delete

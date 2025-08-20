@@ -33,6 +33,8 @@ import ChangePassword from './Components/UserPanel/ChangePassword';
 import Contact from './Components/AdminPanel/Contact';
 import UserProfileSettings from './Components/UserPanel/UserProfileSetting';
 import JobDetails from './Components/UserPanel/JobDetails';
+import HireFromUs from './Components/UserPanel/HireFromUs';
+import AdminPostJobs from './Components/AdminPanel/AdminPostJobs';
 
 const AppContent = () => {
   const location = useLocation();
@@ -66,12 +68,14 @@ const AppContent = () => {
         <Route path="/adminregister" element={<AdminRegisterList />} />
         <Route path="/partnerlist" element={<PartnerList />} />
         <Route path="/jobs" element={<JobApplied />} />
+        <Route path="/adminpostjobs" element={<AdminPostJobs />} />
         <Route path="/adminappliedjobs" element={<AdminAppliedJobs />} />
         <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/applied-jobs" element={<AppliedJobs />} />
-        <Route path="/applied-jobs/apply" element={<JobDetails />} />
+        <Route path="/applied-jobs/apply/:jobTitle" element={<JobDetails />} />
         <Route path="/jobs-applied" element={<AppliedJobsList/>} />
+        <Route path="/hirefromus" element={<HireFromUs />} />
         <Route path="/account-setting" element={<AccountSettings/>} />
         <Route path="/blogs" element={<Blogs/>} />
         <Route path="/blogsection" element={<BlogSection/>} />

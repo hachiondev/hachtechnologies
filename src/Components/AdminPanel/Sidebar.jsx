@@ -24,6 +24,9 @@ const Sidebar = () => {
           <Link className="text-white" to="/jobs">View Job Applied</Link>
         </ListGroup.Item>
          <ListGroup.Item className="bg-dark border-0">
+          <Link className="text-white" to="/adminpostjobs">Jobs Posted</Link>
+        </ListGroup.Item>
+         <ListGroup.Item className="bg-dark border-0">
           <Link className="text-white" to="/adminappliedjobs">Applied Jobs</Link>
         </ListGroup.Item>
         <ListGroup.Item className="bg-dark border-0">
